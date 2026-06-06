@@ -1,10 +1,12 @@
 import React from "react";
 import { InicioScreen } from "./src/screen/InicioScreen";
+import { CadastroScreen } from "./src/screen/CadastroScreen";
+import { LoginScreen } from "./src/screen/LoginScreen";
 
 export default function App() {
   return (
 
-    <InicioScreen />
+    <CadastroScreen/>
     
   );
 }
