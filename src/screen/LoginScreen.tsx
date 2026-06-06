@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {ActivityIndicator,ImageBackground,StyleSheet,Text,TextInput,TouchableOpacity,View,Image} from 'react-native';
 
 
-export function LoginScreen() {
+export function LoginScreen({navigation,}: any) {
   
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -24,11 +24,11 @@ export function LoginScreen() {
 
                 <TextInput style={styles.input} placeholder="Senha" placeholderTextColor="#B8C1D1" value={password} onChangeText={setPassword} secureTextEntry/>
 
-                <TouchableOpacity style={styles.buttonLogin} >
+                <TouchableOpacity style={styles.buttonLogin} onPress={() => navigation.navigate("Home")}>
                     {isLoading ? (<ActivityIndicator color="#FFFFFF" /> ) : (<Text style={styles.buttonLoginText}>Entrar</Text>)}
                 </TouchableOpacity>
 
-                <TouchableOpacity style ={styles.buttonCadastro}>
+                <TouchableOpacity style ={styles.buttonCadastro} onPress={() => navigation.navigate("Cadastro")}>
                     <Text style={styles.buttonCadastroText}>Ainda não tenho uma conta</Text>
                 </TouchableOpacity>
 
@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
         width: 350,
         height: 180,
         alignSelf: "center",
-        marginTop: 30,
+        marginTop: 50,
     },
 
     form: {
-        marginBottom: 210,
+        marginBottom: 190,
     },
 
     input: {

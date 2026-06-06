@@ -9,7 +9,7 @@ const genderOptions: Gender[] = [
   'Prefiro não informar',
 ];
 
-export function CadastroScreen() {
+export function CadastroScreen({navigation,}: any) {
   
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
@@ -66,11 +66,11 @@ export function CadastroScreen() {
 
                 <TextInput style={styles.input} placeholder="Contato de emergência" placeholderTextColor="#B8C1D1" value={emergencyContact} onChangeText={setEmergencyContact} keyboardType="phone-pad"/>
 
-                <TouchableOpacity style={styles.buttonCadastro} >
+                <TouchableOpacity style={styles.buttonCadastro} onPress={() => navigation.navigate("Home")}>
                     {isLoading ? (<ActivityIndicator color="#FFFFFF"/>) : (<Text style={styles.buttonCadastroText}>Cadastrar</Text>)}
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonLogin}>
+                <TouchableOpacity style={styles.buttonLogin} onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.buttonLoginText}>Já tenho uma conta</Text>
                 </TouchableOpacity>
 

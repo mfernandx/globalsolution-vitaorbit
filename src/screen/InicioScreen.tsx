@@ -1,6 +1,6 @@
 import { ImageBackground, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export function InicioScreen() {
+export function InicioScreen({navigation,}: any) {
 
     return (
         
@@ -12,11 +12,11 @@ export function InicioScreen() {
             
             <View style={styles.opcoes}>
 
-                <TouchableOpacity style={styles.buttonCadastro}>
+                <TouchableOpacity style={styles.buttonCadastro} onPress={() => navigation.navigate("Cadastro")}>
                     <Text style={styles.buttonCadastroText}>Começar</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.buttonLogin}>
+                <TouchableOpacity style={styles.buttonLogin} onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.buttonLoginText}>Já tenho uma conta</Text>
                 </TouchableOpacity>
 
