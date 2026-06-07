@@ -42,7 +42,7 @@ export function HomeScreen({navigation,}: any) {
                             <Text style={styles.acoesText}>Registrar{"\n"}sinais</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.registrarSintomasButton}>
+                        <TouchableOpacity style={styles.registrarSintomasButton} onPress={() => navigation.navigate("MonitoramentoSintomas")}>
                             <Ionicons name="add" size={28} color="white"/>
                             <Text style={styles.acoesText}>Registrar{"\n"}sintomas</Text>
                         </TouchableOpacity>

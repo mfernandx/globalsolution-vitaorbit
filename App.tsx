@@ -6,6 +6,7 @@ import { CadastroScreen } from "./src/screen/CadastroScreen";
 import { LoginScreen } from "./src/screen/LoginScreen";
 import Navegador from "./src/components/Navegador";
 import { MonitoramentoSinaisScreen } from "./src/screen/MonitoramentoSinaisScreen";
+import { MonitoramentoSintomasScreen } from "./src/screen/MonitoramentoSintomasScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -27,6 +28,8 @@ export default function App() {
               <Stack.Screen name="Home" component={Navegador}/>
 
               <Stack.Screen name="MonitoramentoSinais" component={MonitoramentoSinaisScreen}/>
+
+              <Stack.Screen name="MonitoramentoSintomas" component={MonitoramentoSintomasScreen}/>
 
           </Stack.Navigator>
       
