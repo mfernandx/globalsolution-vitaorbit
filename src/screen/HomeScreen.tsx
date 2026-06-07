@@ -3,7 +3,7 @@ import { Header } from "../components/Header";
 import { VitalCard } from "../components/VitalCard";
 import { Ionicons } from "@expo/vector-icons";
 
-export function HomeScreen() {
+export function HomeScreen({navigation,}: any) {
 
     return (
         <View style={styles.container}>
@@ -37,7 +37,7 @@ export function HomeScreen() {
 
                     <View style={styles.acoesContainer}>
 
-                        <TouchableOpacity style={styles.registrarSinaisButton}>
+                        <TouchableOpacity style={styles.registrarSinaisButton} onPress={() => navigation.navigate("MonitoramentoSinais")}>
                             <Ionicons name="add" size={32} color="white"/>
                             <Text style={styles.acoesText}>Registrar{"\n"}sinais</Text>
                         </TouchableOpacity>
