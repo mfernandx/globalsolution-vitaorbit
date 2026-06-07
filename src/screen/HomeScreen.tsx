@@ -47,7 +47,7 @@ export function HomeScreen({navigation,}: any) {
                             <Text style={styles.acoesText}>Registrar{"\n"}sintomas</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.emergenciaButton}>
+                        <TouchableOpacity style={styles.emergenciaButton} onPress={() => navigation.navigate("Emergencia")}>
                             <Ionicons name="warning-outline" size={30} color="white"/>
                             <Text style={styles.acoesText}>Emergência</Text>
                         </TouchableOpacity>
