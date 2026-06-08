@@ -16,15 +16,27 @@ interface User {
 }
 
 interface CreateUserRequest {
-  fullName: string;
-  email: string;
-  password: string;
-  birthDate: string;
-  gender: Gender;
-  userDescription: string;
-  currentLocation: string;
-  phoneNumber: string;
-  emergencyContact: string;
+    fullName: string;
+    email: string;
+    password: string;
+    birthDate: string;
+    gender: Gender;
+    userDescription: string;
+    currentLocation: string;
+    phoneNumber: string;
+    emergencyContact: string;
 }
 
-export { User,Gender, CreateUserRequest};
+interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+interface LoginResponse {
+    message: string;
+    userId: number;
+    fullName: string;
+    email: string;
+}
+
+export { User,Gender, CreateUserRequest, LoginRequest, LoginResponse};
