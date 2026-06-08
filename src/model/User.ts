@@ -11,7 +11,7 @@ interface User {
     userDescription: string;
     currentLocation: string;
     phoneNumber: string;
-    emergencyContact?: string;
+    emergencyContact: string;
     createdAt: string;
 }
 
