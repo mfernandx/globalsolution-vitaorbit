@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import {ActivityIndicator,ImageBackground,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View, Image} from 'react-native';
+import {ActivityIndicator,ImageBackground,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View, Image, Alert} from 'react-native';
 import { Gender } from '../model/User';
+import { createUser } from '../services/userService';
 
 const genderOptions: Gender[] = [
   'Feminino',
@@ -19,7 +20,48 @@ export function CadastroScreen({navigation,}: any) {
     const [currentLocation, setCurrentLocation] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [emergencyContact, setEmergencyContact] = useState('');
-    const [isLoading] = useState(false);
+    const [isLoading,setIsLoading] = useState(false);
+
+
+    async function handleCadastro() {
+        if (!fullName ||!email ||!password ||!birthDate ||!gender ||!userDescription ||!currentLocation ||!phoneNumber ||!emergencyContact) {
+            
+            Alert.alert('Atenção', 'Preencha todos os campos.');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            const createdUser = await createUser({
+                fullName,
+                email,
+                password,
+                birthDate,
+                gender,
+                userDescription,
+                currentLocation,
+                phoneNumber,
+                emergencyContact,
+            });
+
+            Alert.alert(
+                'Cadastro realizado',
+                `Usuário ${createdUser.fullName} cadastrado com sucesso!`
+            );
+
+            navigation.navigate('Login');
+
+        } catch (error: any) {
+
+            const apiMessage = error.response?.data;
+
+            Alert.alert('Erro ao cadastrar',typeof apiMessage === 'string' ? apiMessage : 'Não foi possível realizar o cadastro.');
+        
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
 
     return (
@@ -66,7 +108,7 @@ export function CadastroScreen({navigation,}: any) {
 
                 <TextInput style={styles.input} placeholder="Contato de emergência" placeholderTextColor="#B8C1D1" value={emergencyContact} onChangeText={setEmergencyContact} keyboardType="phone-pad"/>
 
-                <TouchableOpacity style={styles.buttonCadastro} onPress={() => navigation.navigate("Home")}>
+                <TouchableOpacity style={styles.buttonCadastro} onPress={handleCadastro}>
                     {isLoading ? (<ActivityIndicator color="#FFFFFF"/>) : (<Text style={styles.buttonCadastroText}>Cadastrar</Text>)}
                 </TouchableOpacity>
 
