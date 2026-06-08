@@ -8,13 +8,14 @@ type VitalInputProps = {
     label: string;
     value: string;
     onChangeText: (value: string) => void;
-    unit: string;
+    unit?: string;
     placeholder?: string;
     keyboardType?: 'default' | 'numeric';
     isLast?: boolean;
 };
 
 export function VitalInput({iconType,iconName,iconColor,label,value,onChangeText,unit,placeholder = '-',keyboardType = 'default',isLast = false,}: VitalInputProps) {
+    
     function renderIcon() {
         if (iconType === 'fontawesome') {
             return (
@@ -26,14 +27,15 @@ export function VitalInput({iconType,iconName,iconColor,label,value,onChangeText
             return (
                 <MaterialCommunityIcons name={iconName as keyof typeof MaterialCommunityIcons.glyphMap} size={32} color={iconColor}/>
             );
+        }
+
+        return (
+            <Ionicons name={iconName as keyof typeof Ionicons.glyphMap} size={32} color={iconColor}/>
+        );
     }
 
     return (
-      <Ionicons name={iconName as keyof typeof Ionicons.glyphMap} size={32} color={iconColor}/>);
-    }
-
-    return (
-        <View style={[styles.vitalInputCard, isLast && styles.vitalRowLast]}>
+        <View style={[styles.vitalInputCard, isLast && styles.vitalLast]}>
             <View style={styles.vitalLeft}>
                 <View style={styles.iconBox}>{renderIcon()}</View>
 
@@ -58,7 +60,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#E5E7EB',
     },
 
-    vitalRowLast: {
+    vitalLast: {
         borderBottomWidth: 0,
     },
 

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import {Alert,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View} from 'react-native';
 import {FontAwesome5,Ionicons} from '@expo/vector-icons';
-import { HealthRecord } from '../model/HealthRecord';
 import { VitalInput } from '../components/VitalInput';
+import { createHealthRecord } from '../services/healthRecordService';
+import { useAuth } from '../context/AuthContext';
 
 
 export function MonitoramentoSinaisScreen({navigation,}: any) {
@@ -16,28 +17,54 @@ export function MonitoramentoSinaisScreen({navigation,}: any) {
     const [sleepHours, setSleepHours] = useState('');
     const [notes, setNotes] = useState('');
     const currentDate = new Date().toLocaleDateString('pt-BR', {day: '2-digit',month: 'long',year: 'numeric',});
+    const { loggedUser } = useAuth();
 
     async function handleSalvaMonitoramento() {
+        if (!loggedUser?.userId) {
+            Alert.alert('Erro', 'Nenhum usuário logado encontrado.');
+            return;
+        }
 
-        const healthRecord: HealthRecord = {
-            heartRate,
-            bloodPressure,
-            bodyTemperature,
-            oxygenSaturation,
-            mood,
-            hydrationLevel,
-            sleepHours,
-            notes,
-            recordedAt: new Date().toISOString(),
-        };
+        if (!heartRate || !bloodPressure || !bodyTemperature || !oxygenSaturation || !mood || !hydrationLevel || !sleepHours) {
+            Alert.alert('Atenção', 'Preencha todos os sinais vitais.');
+            return;
+        }
 
-        console.log('Registro preparado para API:', healthRecord);
+        try {
+            const healthRecord = {
+                userId: loggedUser.userId,
+                heartRate: Number(heartRate),
+                bloodPressure,
+                bodyTemperature: Number(bodyTemperature.replace(',', '.')),
+                oxygenSaturation: Number(oxygenSaturation),
+                mood: mood,
+                hydrationLevel: Number(hydrationLevel.replace(',', '.')),
+                sleepHours: Number(sleepHours.replace(',', '.')),
+                notes,
+            };
 
-        Alert.alert(
-            'Registro preparado',
-        );
+            const createdRecord = await createHealthRecord(healthRecord);
 
-    }
+            Alert.alert(
+                'Registro salvo',
+                `Registro criado com risco: ${createdRecord.riskClassification}`
+            );
+
+            setHeartRate('');
+            setBloodPressure('');
+            setBodyTemperature('');
+            setOxygenSaturation('');
+            setMood('');
+            setHydrationLevel('');
+            setSleepHours('');
+            setNotes('');
+
+        } catch (error: any) {
+            const apiMessage = error.response?.data;
+
+            Alert.alert('Erro ao salvar',typeof apiMessage === 'string' ? apiMessage : 'Não foi possível salvar o registro.');
+        }
+}
 
     return (
 
@@ -71,7 +98,7 @@ export function MonitoramentoSinaisScreen({navigation,}: any) {
 
                     <VitalInput iconType="ionicons" iconName="water-outline" iconColor="#8B5CF6" label="Oxigenação (SpO₂)" value={oxygenSaturation} onChangeText={setOxygenSaturation} unit="%" keyboardType="numeric"/>
 
-                    <VitalInput iconType="ionicons" iconName="happy-outline" iconColor="#F4B740" label="Humor" value={mood} onChangeText={setMood} unit="/10" keyboardType="numeric"/>
+                    <VitalInput iconType="ionicons" iconName="happy-outline" iconColor="#F4B740" label="Humor" value={mood} onChangeText={setMood} placeholder='Normal'/>
 
                     <VitalInput iconType="ionicons" iconName="water" iconColor="#38BDF8" label="Hidratação" value={hydrationLevel} onChangeText={setHydrationLevel} unit="L" keyboardType="numeric"/>
 
@@ -158,7 +185,6 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         padding: 20,
         marginBottom: 20,
-
         shadowColor: '#000',
         shadowOpacity: 0.06,
         shadowRadius: 8,

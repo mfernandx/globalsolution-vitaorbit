@@ -1,9 +1,39 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity} from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert} from "react-native";
 import { Header } from "../components/Header";
 import { VitalCard } from "../components/VitalCard";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
+import { getHealthRecordsByUserId } from "../services/healthRecordService";
 
 export function HomeScreen({navigation,}: any) {
+
+    const { loggedUser } = useAuth();
+    const [lastRecord, setLastRecord] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    async function carregarUltimoRegistro() {
+        try {
+            if (!loggedUser?.userId) {
+                Alert.alert("Erro", "Usuário logado não encontrado.");
+                return;
+            }
+
+            const registros = await getHealthRecordsByUserId(loggedUser.userId);
+
+            if (registros.length > 0) {
+                setLastRecord(registros[0]);
+            }
+
+        } catch (error) {
+            Alert.alert("Erro", "Não foi possível carregar o último registro.");
+
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {carregarUltimoRegistro();}, []);
 
     return (
         <View style={styles.container}>
@@ -16,21 +46,21 @@ export function HomeScreen({navigation,}: any) {
 
                     <View style={styles.containerTitulo}>
                         <Text style={styles.tituloDashboard}>Resumo de hoje</Text>
-                        <Text style={styles.ultimaAtualizacao}>Atualizado agora</Text>
+                        <Text style={styles.ultimaAtualizacao}>Atualizado</Text>
                     </View>
 
                     <View style={styles.containerCards}>
-                        <VitalCard titulo="Batimentos" valor="-" unidade="bpm" icon="heart" cor="#FF6B81"/>
+                        <VitalCard titulo="Batimentos" valor={lastRecord ? String(lastRecord.heartRate) : "-"} unidade="bpm" icon="heart" cor="#FF6B81"/>
                     
-                        <VitalCard titulo="Oxigenação" valor="-" unidade="%" icon="water" cor="#8C7BFF"/>
+                        <VitalCard titulo="Oxigenação" valor={lastRecord ? String(lastRecord.oxygenSaturation) : "-"} unidade="%" icon="water" cor="#8C7BFF"/>
                     
-                        <VitalCard titulo="Temperatura" valor="-" unidade="°C" icon="thermometer-half" cor="#FF8A4C"/>
+                        <VitalCard titulo="Temperatura" valor={lastRecord ? String(lastRecord.bodyTemperature) : "-"} unidade="°C" icon="thermometer-half" cor="#FF8A4C"/>
                     
-                        <VitalCard titulo="Pressão" valor="-" unidade="mmHg" icon="heartbeat" cor="#A95EFF"/>
+                        <VitalCard titulo="Pressão" valor={lastRecord ? String(lastRecord.bloodPressure) : "-"} unidade="mmHg" icon="heartbeat" cor="#A95EFF"/>
                     
-                        <VitalCard titulo="Sono" valor="-" unidade="horas" icon="moon" cor="#7B6CFF"/>
+                        <VitalCard titulo="Sono" valor={lastRecord ? String(lastRecord.sleepHours) : "-"} unidade="horas" icon="moon" cor="#7B6CFF"/>
                     
-                        <VitalCard titulo="Hidratação" valor="-" unidade="L" icon="tint" cor="#53B8FF"/>
+                        <VitalCard titulo="Hidratação" valor={lastRecord ? String(lastRecord.hydrationLevel) : "-"} unidade="L" icon="tint" cor="#53B8FF"/>
                     </View>
 
                     <Text style={styles.tituloAcoes}>Ações rápidas</Text>

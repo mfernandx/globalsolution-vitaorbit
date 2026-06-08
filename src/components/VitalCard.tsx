@@ -28,7 +28,7 @@ export function VitalCard({titulo,valor,unidade,icon,cor}: VitalCardProps) {
 const styles = StyleSheet.create({
 
     vitalCard: {
-        width: '31.8%',
+        width: '32%',
         backgroundColor: 'white',
         borderRadius: 18,
         padding: 14,
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     },
 
     vitalValor: {
-        fontSize: 28,
+        fontSize: 23,
         fontWeight: 'bold',
         marginTop: 8,
     },
