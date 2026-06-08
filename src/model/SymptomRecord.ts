@@ -1,9 +1,24 @@
 interface SymptomRecord {
+    symptomRecordId: number;
+    userId: number;
     symptomName: string;
-    intensity: string;
+    intensity: number;
     frequency: string;
-    description: string;
     startedAt: string;
+    description: string;
+    riskClassification: string;
+    registeredAt: string;
 }
 
-export {SymptomRecord}
+interface CreateSymptomRecordRequest {
+    userId: number;
+    symptomName: string;
+    intensity: number;
+    frequency: string;
+    startedAt: string;
+    description: string;
+}
+
+
+
+export {SymptomRecord,CreateSymptomRecordRequest}

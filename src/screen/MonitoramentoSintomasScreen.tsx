@@ -4,6 +4,8 @@ import { SymptomRecord } from '../model/SymptomRecord';
 import { SymptomNameCard } from '../components/SymptomNameCard';
 import { Ionicons } from '@expo/vector-icons';
 import { SymptomInput } from '../components/SymptomInput';
+import { useAuth } from '../context/AuthContext';
+import { createSymptomRecord } from '../services/symptomRecordService';
 
 export function MonitoramentoSintomasScreen({navigation,}: any) {
 
@@ -12,30 +14,56 @@ export function MonitoramentoSintomasScreen({navigation,}: any) {
     const [frequency, setFrequency] = useState('');
     const [description, setDescription] = useState('');
     const [startedAt, setStartedAt] = useState('');
+    const {loggedUser} = useAuth();
 
     async function handleSalvaSintoma() {
-        if (!symptomName || !frequency || !description || !startedAt) {
-            Alert.alert(
-                'Atenção',
-                'Preencha sintoma, frequência, descrição e data de início.'
-            );
-        return;
+        if (!loggedUser?.userId) {
+            Alert.alert('Erro', 'Nenhum usuário logado encontrado.');
+            return;
         }
 
-        const symptomRecord: SymptomRecord = {
-            symptomName,
-            intensity,
-            frequency,
-            description,
-            startedAt,
-        };
+        if (!symptomName || !intensity || !frequency || !description || !startedAt) {
+            Alert.alert('Atenção','Preencha sintoma, frequência, descrição e data de início.');
+            return;
+        }
 
-        console.log('Sintoma preparado para API:', symptomRecord);
+        const intensityNumber = Number(intensity);
 
-        Alert.alert(
-            'Registro preparado',
-        );
+        if (intensityNumber < 0 || intensityNumber > 10) {
+            Alert.alert('Atenção', 'A intensidade deve ser um número entre 0 e 10.');
+            return;
+        }
 
+        try {
+            const symptomRecord = {
+                userId: loggedUser.userId,
+                symptomName,
+                intensity: intensityNumber,
+                frequency,
+                startedAt,
+                description,
+            };
+        
+            const createdRecord = await createSymptomRecord(symptomRecord);
+        
+            Alert.alert(
+                'Registro salvo',
+                `Registro criado com risco: ${createdRecord.riskClassification}`
+            );
+        
+            setSymptomName('');
+            setIntensity('');
+            setFrequency('');
+            setStartedAt('');
+            setDescription('');
+        
+        } catch (error: any) {
+            const apiMessage = error.response?.data;
+        
+            Alert.alert('Erro ao salvar',typeof apiMessage === 'string' ? apiMessage : 'Não foi possível salvar o registro.');
+        }
+
+        
     }
 
     return (
@@ -63,7 +91,7 @@ export function MonitoramentoSintomasScreen({navigation,}: any) {
                     
                     <SymptomInput iconType="material" iconName="timetable" iconColor="#F4B740" label="Frequência" value={frequency} onChangeText={setFrequency} placeholder='EX: 1 vez ao dia' />
                     
-                    <SymptomInput iconType="fontawesome" iconName="calendar-alt" iconColor="#6366F1" label="Quando começou?" value={startedAt} onChangeText={setStartedAt} placeholder='24/05/2024'/>
+                    <SymptomInput iconType="fontawesome" iconName="calendar-alt" iconColor="#6366F1" label="Quando começou?" value={startedAt} onChangeText={setStartedAt} placeholder='YYYY-MM-DD'/>
                 </View>
 
 

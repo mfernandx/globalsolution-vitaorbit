@@ -73,12 +73,12 @@ export function HomeScreen({navigation,}: any) {
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.registrarSintomasButton} onPress={() => navigation.navigate("MonitoramentoSintomas")}>
-                            <Ionicons name="add" size={28} color="white"/>
+                            <Ionicons name="add" size={32} color="white"/>
                             <Text style={styles.acoesText}>Registrar{"\n"}sintomas</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.emergenciaButton} onPress={() => navigation.navigate("Emergencia")}>
-                            <Ionicons name="warning-outline" size={30} color="white"/>
+                            <Ionicons name="warning-outline" size={32} color="white"/>
                             <Text style={styles.acoesText}>Emergência</Text>
                         </TouchableOpacity>
 
