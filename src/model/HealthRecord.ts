@@ -1,13 +1,13 @@
 interface HealthRecord {
     healthRecordId: number;
     userId: number;
-    heartRate: string;
+    heartRate: number;
     bloodPressure: string;
-    bodyTemperature: string;
-    oxygenSaturation: string;
+    bodyTemperature: number;
+    oxygenSaturation: number;
     mood: string;
-    hydrationLevel: string;
-    sleepHours: string;
+    hydrationLevel: number;
+    sleepHours: number;
     notes?: string;
     riskClassification: string;
     recordedAt: string;
