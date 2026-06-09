@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export function Header() {
@@ -8,9 +8,11 @@ export function Header() {
 
             <Text style={styles.titulo}>Olá!👋</Text>
 
-            <Text style={styles.subtitulo}>Seja bem-vindo ao</Text>
-
-            <Text style={styles.logo}>VitaOrbit</Text>
+            <View style={styles.tituloCompleto}>
+                <Text style={styles.subtitulo}>Seja bem-vindo ao </Text>
+                <Image source={require('../../assets/logo-semslogan.png')} style={styles.logo} resizeMode="contain" />
+            </View>
+                
 
             <View style={styles.conexaoCard}>
                 <View style={styles.conexaoLeft}>
@@ -49,14 +51,18 @@ const styles = StyleSheet.create({
     subtitulo: {
         color: 'white',
         fontSize: 20,
-        marginTop: 12,
+        marginTop: 18,
     },
 
     logo: {
-        color: '#8E88FF',
-        fontSize: 42,
-        fontWeight: 'bold',
-        marginBottom: 24,
+        width: 170,
+        marginTop: -53,
+    },
+
+
+    tituloCompleto: {
+        flexDirection: 'row',
+        marginBottom: -45
     },
 
     conexaoCard: {
