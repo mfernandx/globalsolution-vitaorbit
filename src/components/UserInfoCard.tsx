@@ -1,18 +1,26 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 type UserInfoCardProps = {
     label: string;
     value: string;
     isLast?: boolean;
+    onEdit?: () => void;
 };
 
-export function UserInfoCard({ label, value, isLast = false }: UserInfoCardProps) {
+export function UserInfoCard({ label, value, isLast = false, onEdit }: UserInfoCardProps) {
     return (
         <View style={[styles.infoCampo, isLast && styles.infoLast]}>
             <Text style={styles.infoLabel}>{label}</Text>
 
             <View style={styles.infoRight}>
                 <Text style={styles.infoValor}>{value || '-'}</Text>
+
+                {onEdit && (
+                    <TouchableOpacity onPress={onEdit}>
+                        <Ionicons name="create-outline" size={22} color="#6366F1" />
+                    </TouchableOpacity>
+                )}
             </View>
         </View>
     );

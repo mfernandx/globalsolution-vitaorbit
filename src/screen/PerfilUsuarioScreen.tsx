@@ -4,7 +4,8 @@ import { User } from "../model/User";
 import { useAuth } from "../context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { UserInfoCard } from '../components/UserInfoCard';
-import { carregarPerfilUsuarioControl, deletarContaUsuarioControl } from "../controller/profileUserControl";
+import { atualizarCampoUsuarioControl, carregarPerfilUsuarioControl, deletarContaUsuarioControl, EditUserField } from "../controller/profileUserControl";
+import { EditModal } from "../components/EditModal";
 
 export function PerfilUsuarioScreen({ navigation }: any) {
 
@@ -12,6 +13,10 @@ export function PerfilUsuarioScreen({ navigation }: any) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [offlineMode, setOfflineMode] = useState(true);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editField, setEditField] = useState<EditUserField | null>(null);
+    const [editLabel, setEditLabel] = useState("");
+    const [editValue, setEditValue] = useState("");
   
     async function carregaPerfilUsuario() {
 
@@ -30,18 +35,23 @@ export function PerfilUsuarioScreen({ navigation }: any) {
 
     useEffect(() => {carregaPerfilUsuario();}, []);
 
-    function confirmarExclusaoConta() {
-        Alert.alert("Excluir conta","Tem certeza que deseja apagar sua conta? Essa ação não poderá ser desfeita.",
-            [
-                {
-                    text: "Cancelar",
-                },
-                {
-                    text: "Excluir",
-                    onPress: deletarContaUsuario,
-                },
-            ]
-        );
+
+    async function salvarEdicao() {
+        try {
+            if (!editField) return;
+
+            const response = await atualizarCampoUsuarioControl(loggedUser?.userId ?? 0,editField,editValue);
+
+            Alert.alert("Sucesso", response);
+
+            fecharModal();
+            carregaPerfilUsuario();
+
+        } catch (error: any) {
+            const apiMessage = error.response?.data;
+
+            Alert.alert("Erro ao atualizar",typeof apiMessage === "string" ? apiMessage : error.message || "Não foi possível atualizar o campo.");
+        }
     }
 
     async function deletarContaUsuario() {
@@ -59,6 +69,34 @@ export function PerfilUsuarioScreen({ navigation }: any) {
 
             Alert.alert("Erro ao excluir conta",typeof apiMessage === "string" ? apiMessage : error.message || "Não foi possível excluir a conta.");
         }
+    }
+
+    function confirmarExclusaoConta() {
+        Alert.alert("Excluir conta","Tem certeza que deseja apagar sua conta? Essa ação não poderá ser desfeita.",
+            [
+                {
+                    text: "Cancelar",
+                },
+                {
+                    text: "Excluir",
+                    onPress: deletarContaUsuario,
+                },
+            ]
+        );
+    }
+
+    function abrirModal(field: EditUserField, label: string, currentValue: string) {
+        setEditField(field);
+        setEditLabel(label);
+        setEditValue(currentValue);
+        setEditModalVisible(true);
+    }
+
+    function fecharModal() {
+        setEditModalVisible(false);
+        setEditField(null);
+        setEditLabel("");
+        setEditValue("");
     }
 
     if (isLoading) {
@@ -101,10 +139,10 @@ export function PerfilUsuarioScreen({ navigation }: any) {
 
                     <UserInfoCard label="Gênero" value={user.gender} />
                     <UserInfoCard label="Nascimento" value={new Date(user.birthDate).toLocaleDateString('pt-BR')} />
-                    <UserInfoCard label="Localização atual" value={user.currentLocation} />
-                    <UserInfoCard label="Telefone" value={user.phoneNumber} />
-                    <UserInfoCard label="Contato de emergência" value={user.emergencyContact} />
-                    <UserInfoCard label="E-mail" value={user.email} isLast/>
+                    <UserInfoCard label="Localização atual" value={user.currentLocation} onEdit={() => abrirModal("currentLocation", "Localização atual", user.currentLocation)}/>
+                    <UserInfoCard label="Telefone" value={user.phoneNumber} onEdit={() => abrirModal("phoneNumber", "Telefone", user.phoneNumber)}/>
+                    <UserInfoCard label="Contato de emergência" value={user.emergencyContact} onEdit={() => abrirModal("emergencyContact", "Contato de emergência", user.emergencyContact)}/>
+                    <UserInfoCard label="E-mail" value={user.email} isLast onEdit={() => abrirModal("email", "E-mail", user.email)}/>
 
                 </View>
 
@@ -136,6 +174,9 @@ export function PerfilUsuarioScreen({ navigation }: any) {
                 </View>
 
             </ScrollView>
+
+            <EditModal visible={editModalVisible} title={`Alterar ${editLabel}`} value={editValue} onChangeText={setEditValue} onCancel={fecharModal} onSave={salvarEdicao}
+                keyboardType={editField === "email" ? "email-address" : editField === "phoneNumber" || editField === "emergencyContact" ? "phone-pad" : "default"}/>
 
         </View>
   );
