@@ -1,34 +1,49 @@
 import { useState } from 'react';
 import {Alert,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View} from 'react-native';
-import { Emergency } from '../model/Emergency';
 import { Ionicons } from '@expo/vector-icons';
+import { useAuth } from "../context/AuthContext";
+import { createEmergency } from "../services/emergencyService";
 
 export function EmergenciaScreen({navigation,}: any) {
 
     const [message, setMessage] = useState('');
     const [location, setLocation] = useState('');
+    const { loggedUser } = useAuth();
 
 
     async function handleSolicitaEmergencia() {
-        if (!message || !location) {
-            Alert.alert(
-                'Atenção',
-                'Informe uma mensagem e sua localização antes de solicitar ajuda.'
-            );
+
+        if (!loggedUser?.userId) {
+            Alert.alert("Erro", "Usuário logado não encontrado.");
             return;
         }
 
-        const emergencyRequest: Emergency = {
-            message,
-            location,
-        };
+        if (!message || !location) {
+            Alert.alert("Atenção","Informe uma mensagem e sua localização antes de solicitar ajuda.");
+            return;
+        }
 
-        console.log('Emergência preparada para API:', emergencyRequest);
+        try {
+            const emergencyRequest = {
+                userId: loggedUser.userId,
+                location,
+                message,
+            };
 
-        Alert.alert(
-            'Solicitação preparada',
-        );
+            const createdEmergency = await createEmergency(emergencyRequest);
 
+            Alert.alert(
+                "Emergência solicitada",
+                `Solicitação registrada com status: ${createdEmergency.status}`
+            );
+
+            setMessage("");
+            setLocation("");
+
+        } catch (error: any) {
+            const apiMessage = error.response?.data;
+            Alert.alert("Erro ao solicitar emergência", typeof apiMessage === "string" ? apiMessage : "Não foi possível registrar a emergência.");
+        }
     }
 
     return (
@@ -54,7 +69,7 @@ export function EmergenciaScreen({navigation,}: any) {
                 
                     <Text style={styles.tituloCardEmergencia}>Solicitação de emergência</Text>
             
-                    <Text style={styles.descricaoCardEmergencia}>Use esta área apenas quando precisar enviar um pedido rápido de ajuda.</Text>
+                    <Text style={styles.descricaoCardEmergencia}>Use essa área apenas quando precisar enviar um pedido rápido de ajuda.</Text>
                 </View>
 
                 <View style={styles.cardMensagem}>
