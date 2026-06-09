@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Switch, Text, View, TouchableOpacity} from "react-native";
 import { User } from "../model/User";
 import { useAuth } from "../context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { UserInfoCard } from '../components/UserInfoCard';
-import { carregarPerfilUsuarioControl } from "../controller/profileUserControl";
+import { carregarPerfilUsuarioControl, deletarContaUsuarioControl } from "../controller/profileUserControl";
 
-export function PerfilUsuarioScreen() {
+export function PerfilUsuarioScreen({ navigation }: any) {
 
-    const { loggedUser } = useAuth();
+    const { loggedUser, signOut } = useAuth();
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [offlineMode, setOfflineMode] = useState(true);
@@ -29,6 +29,37 @@ export function PerfilUsuarioScreen() {
     }
 
     useEffect(() => {carregaPerfilUsuario();}, []);
+
+    function confirmarExclusaoConta() {
+        Alert.alert("Excluir conta","Tem certeza que deseja apagar sua conta? Essa ação não poderá ser desfeita.",
+            [
+                {
+                    text: "Cancelar",
+                },
+                {
+                    text: "Excluir",
+                    onPress: deletarContaUsuario,
+                },
+            ]
+        );
+    }
+
+    async function deletarContaUsuario() {
+        try {
+            const response = await deletarContaUsuarioControl(loggedUser?.userId ?? 0);
+
+            Alert.alert("Conta excluída", response);
+
+            signOut();
+
+            navigation.navigate("Inicio");
+            
+        } catch (error: any) {
+            const apiMessage = error.response?.data;
+
+            Alert.alert("Erro ao excluir conta",typeof apiMessage === "string" ? apiMessage : error.message || "Não foi possível excluir a conta.");
+        }
+    }
 
     if (isLoading) {
         return (
@@ -91,6 +122,17 @@ export function PerfilUsuarioScreen() {
                             <Switch value={offlineMode} onValueChange={setOfflineMode} trackColor={{false: '#D1D5DB',true: '#00D4AA'}}thumbColor="#FFFFFF"/>
                         </View>
                     </View>
+                </View>
+
+                <View style={styles.cardExcluirConta}>
+
+                    <TouchableOpacity style={styles.buttonExcluirConta} onPress={confirmarExclusaoConta}>
+                        <Ionicons name="trash-outline" size={22} color="#FFFFFF" />
+                        <Text style={styles.buttonTextExcluirConta}>Excluir minha conta</Text>
+                    </TouchableOpacity>
+
+                    <Text style={styles.cardExcluirContaTexto}>Ao excluir sua conta, seus dados serão removidos permanentemente do sistema.</Text>
+
                 </View>
 
             </ScrollView>
@@ -181,7 +223,6 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         padding: 20,
         marginBottom: 20,
-
         shadowColor: '#000',
         shadowOpacity: 0.06,
         shadowRadius: 8,
@@ -218,6 +259,41 @@ const styles = StyleSheet.create({
     switchArea: {
         alignItems: 'center',
         justifyContent: 'center',
+    },
+
+    cardExcluirConta: {
+        backgroundColor: "#FFFFFF",
+        borderRadius: 24,
+        padding: 20,
+        marginBottom: 20,
+        shadowColor: "#000",
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+
+    cardExcluirContaTexto: {
+        color: "#64748B",
+        fontSize: 15,
+        lineHeight: 22,
+        marginTop: 18,
+        textAlign: 'center',
+    },
+
+    buttonExcluirConta: {
+        backgroundColor: "#FF5252",
+        borderRadius: 16,
+        padding: 16,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+        gap: 10,
+    },
+
+    buttonTextExcluirConta: {
+        color: "#FFFFFF",
+        fontSize: 16,
+        fontWeight: "bold",
     },
 
 });

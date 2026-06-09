@@ -15,3 +15,8 @@ export async function getUserById(userId: number): Promise<User> {
     const response = await api.get<User>(`/user/${userId}`);
     return response.data;
 }
+
+export async function deleteUserById(userId: number): Promise<string> {
+    const response = await api.delete<string>(`/user/${userId}`);
+    return response.data;
+}
