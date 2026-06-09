@@ -4,7 +4,7 @@ import { VitalCard } from "../components/VitalCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState } from "react";
-import { getHealthRecordsByUserId } from "../services/healthRecordService";
+import { carregarUltimoRegistroControl } from "../controller/dashboardControl";
 
 export function HomeScreen({navigation,}: any) {
 
@@ -14,20 +14,13 @@ export function HomeScreen({navigation,}: any) {
 
     async function carregarUltimoRegistro() {
         try {
-            if (!loggedUser?.userId) {
-                Alert.alert("Erro", "Usuário logado não encontrado.");
-                return;
-            }
+            const registro = await carregarUltimoRegistroControl(loggedUser?.userId ?? 0);
 
-            const registros = await getHealthRecordsByUserId(loggedUser.userId);
+            setLastRecord(registro);
 
-            if (registros.length > 0) {
-                setLastRecord(registros[0]);
-            }
-
-        } catch (error) {
-            Alert.alert("Erro", "Não foi possível carregar o último registro.");
-
+        } catch (error: any) {
+            Alert.alert("Erro",error.message || "Não foi possível carregar o último registro.");
+        
         } finally {
             setLoading(false);
         }

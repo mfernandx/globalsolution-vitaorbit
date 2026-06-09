@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import {ActivityIndicator,Alert,ScrollView,StyleSheet,Text,View,} from "react-native";
 import { useAuth } from "../context/AuthContext";
-import { HealthRecord } from "../model/HealthRecord";
 import { SystemAlert } from "../model/SystemAlert";
-import { getHealthRecordsByUserId } from "../services/healthRecordService";
-import { enviaSystemAlerts } from "../services/systemAlertService";
 import { AlertCard } from "../components/AlertCard";
+import { carregarAlertasControl } from "../controller/alertControl";
 
 export function AlertasScreen() {
 
@@ -15,22 +13,16 @@ export function AlertasScreen() {
 
     async function carregarAlertas() {
         try {
-            if (!loggedUser?.userId) {
-                Alert.alert("Erro", "Usuário logado não encontrado.");
-                return;
-            }
-
-            const records: HealthRecord[] = await getHealthRecordsByUserId(loggedUser.userId);
-
-            const latestRecord = records.length > 0 ? records[0] : null;
-
-            const generatedAlerts = enviaSystemAlerts(latestRecord);
+            const generatedAlerts = await carregarAlertasControl(
+                loggedUser?.userId ?? 0
+            );
 
             setAlerts(generatedAlerts);
-
-        } catch {
-            Alert.alert("Erro", "Não foi possível carregar os alertas.");
-
+        } catch (error: any) {
+            Alert.alert(
+                "Erro",
+                error.message || "Não foi possível carregar os alertas."
+            );
         } finally {
             setIsLoading(false);
         }

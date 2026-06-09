@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {Alert,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from "../context/AuthContext";
-import { createEmergency } from "../services/emergencyService";
+import { requestEmergencyControl } from '../controller/emergencyControl';
 
 export function EmergenciaScreen({navigation,}: any) {
 
@@ -12,25 +12,12 @@ export function EmergenciaScreen({navigation,}: any) {
 
 
     async function handleSolicitaEmergencia() {
-
-        if (!loggedUser?.userId) {
-            Alert.alert("Erro", "Usuário logado não encontrado.");
-            return;
-        }
-
-        if (!message || !location) {
-            Alert.alert("Atenção","Informe uma mensagem e sua localização antes de solicitar ajuda.");
-            return;
-        }
-
         try {
-            const emergencyRequest = {
-                userId: loggedUser.userId,
+            const createdEmergency = await requestEmergencyControl({
+                userId: loggedUser?.userId ?? 0,
                 location,
                 message,
-            };
-
-            const createdEmergency = await createEmergency(emergencyRequest);
+            });
 
             Alert.alert(
                 "Emergência solicitada",
@@ -39,10 +26,9 @@ export function EmergenciaScreen({navigation,}: any) {
 
             setMessage("");
             setLocation("");
-
+            
         } catch (error: any) {
-            const apiMessage = error.response?.data;
-            Alert.alert("Erro ao solicitar emergência", typeof apiMessage === "string" ? apiMessage : "Não foi possível registrar a emergência.");
+            Alert.alert("Erro", error.message);
         }
     }
 

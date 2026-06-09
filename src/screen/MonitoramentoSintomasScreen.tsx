@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import {Alert,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View} from 'react-native';
-import { SymptomRecord } from '../model/SymptomRecord';
 import { SymptomNameCard } from '../components/SymptomNameCard';
 import { Ionicons } from '@expo/vector-icons';
 import { SymptomInput } from '../components/SymptomInput';
 import { useAuth } from '../context/AuthContext';
-import { createSymptomRecord } from '../services/symptomRecordService';
+import { salvarMonitoramentoSintomasControl } from '../controller/symptomRecordControl';
 
 export function MonitoramentoSintomasScreen({navigation,}: any) {
 
@@ -16,53 +15,38 @@ export function MonitoramentoSintomasScreen({navigation,}: any) {
     const [startedAt, setStartedAt] = useState('');
     const {loggedUser} = useAuth();
 
+    function limparFormulario() {
+        setSymptomName("");
+        setIntensity("");
+        setFrequency("");
+        setStartedAt("");
+        setDescription("");
+    }
+
     async function handleSalvaSintoma() {
-        if (!loggedUser?.userId) {
-            Alert.alert('Erro', 'Nenhum usuário logado encontrado.');
-            return;
-        }
-
-        if (!symptomName || !intensity || !frequency || !description || !startedAt) {
-            Alert.alert('Atenção','Preencha sintoma, frequência, descrição e data de início.');
-            return;
-        }
-
-        const intensityNumber = Number(intensity);
-
-        if (intensityNumber < 0 || intensityNumber > 10) {
-            Alert.alert('Atenção', 'A intensidade deve ser um número entre 0 e 10.');
-            return;
-        }
 
         try {
-            const symptomRecord = {
-                userId: loggedUser.userId,
+            const createdRecord = await salvarMonitoramentoSintomasControl({
+                userId: loggedUser?.userId ?? 0,
                 symptomName,
-                intensity: intensityNumber,
+                intensity,
                 frequency,
-                startedAt,
                 description,
-            };
-        
-            const createdRecord = await createSymptomRecord(symptomRecord);
-        
+                startedAt,
+            });
+
             Alert.alert(
-                'Registro salvo',
-                `Registro criado com risco: ${createdRecord.riskClassification}`
+                "Registro salvo",
+                `Sintoma ${createdRecord.symptomName} registrado com sucesso.`
             );
-        
-            setSymptomName('');
-            setIntensity('');
-            setFrequency('');
-            setStartedAt('');
-            setDescription('');
-        
+
+            limparFormulario();
+
         } catch (error: any) {
             const apiMessage = error.response?.data;
-        
-            Alert.alert('Erro ao salvar',typeof apiMessage === 'string' ? apiMessage : 'Não foi possível salvar o registro.');
-        }
 
+            Alert.alert("Erro ao salvar",typeof apiMessage === "string" ? apiMessage : error.message || "Não foi possível salvar o registro.");
+        }
         
     }
 
@@ -106,7 +90,7 @@ export function MonitoramentoSintomasScreen({navigation,}: any) {
 
             </ScrollView>
         </View>
-  );
+    );
 }
 
 const styles = StyleSheet.create({

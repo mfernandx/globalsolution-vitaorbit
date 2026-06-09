@@ -10,7 +10,7 @@ interface HealthRecord {
     sleepHours: number;
     notes?: string;
     riskClassification: string;
-    recordedAt: string;
+    registeredAt: string;
 }
 
 interface CreateHealthRecordRequest {

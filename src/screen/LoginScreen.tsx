@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {ActivityIndicator,ImageBackground,StyleSheet,Text,TextInput,TouchableOpacity,View,Image,Alert,} from "react-native";
-import { loginUser } from "../services/userService";
 import { useAuth } from "../context/AuthContext";
+import { loginControl } from "../controller/loginControl";
 
 export function LoginScreen({ navigation }: any) {
 
@@ -11,15 +11,10 @@ export function LoginScreen({ navigation }: any) {
     const { signIn } = useAuth();
 
     async function handleLogin() {
-        if (!email || !password) {
-            Alert.alert("Atenção", "Preencha e-mail e senha.");
-            return;
-        }
-
         try {
             setIsLoading(true);
 
-            const response = await loginUser({ email, password });
+            const response = await loginControl({email,password});
 
             signIn(response);
 
@@ -30,7 +25,7 @@ export function LoginScreen({ navigation }: any) {
         } catch (error: any) {
             const apiMessage = error.response?.data;
 
-            Alert.alert("Erro ao entrar",typeof apiMessage === "string" ? apiMessage : "Não foi possível realizar o login.");
+            Alert.alert("Erro ao entrar",typeof apiMessage === "string" ? apiMessage : error.message || "Não foi possível realizar o login.");
         
         } finally {
             setIsLoading(false);
@@ -38,6 +33,7 @@ export function LoginScreen({ navigation }: any) {
     }
 
     return (
+        
         <ImageBackground source={require("../../assets/background-login.png")} style={styles.background} resizeMode="cover">
 
         <View style={styles.conteudo}>

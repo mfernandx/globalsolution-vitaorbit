@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {ActivityIndicator,ImageBackground,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View, Image, Alert} from 'react-native';
 import { Gender } from '../model/User';
-import { createUser } from '../services/userService';
+import { cadastrarUsuarioControl } from '../controller/registerControl';
 
 const genderOptions: Gender[] = [
   'Feminino',
@@ -24,16 +24,11 @@ export function CadastroScreen({navigation,}: any) {
 
 
     async function handleCadastro() {
-        if (!fullName ||!email ||!password ||!birthDate ||!gender ||!userDescription ||!currentLocation ||!phoneNumber ||!emergencyContact) {
-            
-            Alert.alert('Atenção', 'Preencha todos os campos.');
-            return;
-        }
 
         try {
             setIsLoading(true);
 
-            const createdUser = await createUser({
+            const createdUser = await cadastrarUsuarioControl({
                 fullName,
                 email,
                 password,
@@ -46,17 +41,16 @@ export function CadastroScreen({navigation,}: any) {
             });
 
             Alert.alert(
-                'Cadastro realizado',
+                "Cadastro realizado",
                 `Usuário ${createdUser.fullName} cadastrado com sucesso!`
             );
 
-            navigation.navigate('Login');
+            navigation.navigate("Login");
 
         } catch (error: any) {
-
             const apiMessage = error.response?.data;
 
-            Alert.alert('Erro ao cadastrar',typeof apiMessage === 'string' ? apiMessage : 'Não foi possível realizar o cadastro.');
+            Alert.alert("Erro ao cadastrar",typeof apiMessage === "string" ? apiMessage : error.message || "Não foi possível realizar o cadastro.");
         
         } finally {
             setIsLoading(false);
@@ -66,63 +60,63 @@ export function CadastroScreen({navigation,}: any) {
 
     return (
 
-    <ImageBackground source={require('../../assets/background-login.png')} style={styles.background} resizeMode="cover">
-    
-    <View style={styles.conteudo}>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-
-            <View style={styles.header}>
-                <Image source={require('../../assets/logo-cadastro-vitaorbit.png')} style={styles.logo} resizeMode="contain" />
-            </View>
-
+        <ImageBackground source={require('../../assets/background-login.png')} style={styles.background} resizeMode="cover">
         
-            <View style={styles.form}>
-                
+        <View style={styles.conteudo}>
 
-                <TextInput style={styles.input} placeholder="Nome completo" placeholderTextColor="#B8C1D1" value={fullName} onChangeText={setFullName}/>
+            <ScrollView showsVerticalScrollIndicator={false}>
 
-                <TextInput style={styles.input} placeholder="E-mail" placeholderTextColor="#B8C1D1" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"/>
-
-                <TextInput style={styles.input} placeholder="Senha" placeholderTextColor="#B8C1D1" value={password} onChangeText={setPassword} secureTextEntry/>
-
-                <TextInput style={styles.input} placeholder="Data de nascimento" placeholderTextColor="#B8C1D1" value={birthDate} onChangeText={setBirthDate}/>
-
-                <Text style={styles.tituloGenero}>Gênero</Text>
-
-                <View style={styles.generoContainer}>
-                    {genderOptions.map((option) => (
-                        <TouchableOpacity key={option} style={[styles.generoButton,gender === option && styles.generoButtonSelected,]} onPress={() => setGender(option)}>
-                        <Text style={[styles.generoButtonText,gender === option && styles.generoButtonTextSelected,]}>
-                            {option}
-                        </Text>
-                        </TouchableOpacity>
-                    ))}
+                <View style={styles.header}>
+                    <Image source={require('../../assets/logo-cadastro-vitaorbit.png')} style={styles.logo} resizeMode="contain" />
                 </View>
 
-                <TextInput style={[styles.input, styles.textArea]} placeholder="Descrição do usuário" placeholderTextColor="#B8C1D1" value={userDescription} onChangeText={setUserDescription} multiline/>
+            
+                <View style={styles.form}>
+                    
 
-                <TextInput style={styles.input} placeholder="Localização atual" placeholderTextColor="#B8C1D1" value={currentLocation} onChangeText={setCurrentLocation}/>
+                    <TextInput style={styles.input} placeholder="Nome completo" placeholderTextColor="#B8C1D1" value={fullName} onChangeText={setFullName}/>
 
-                <TextInput style={styles.input} placeholder="Telefone" placeholderTextColor="#B8C1D1" value={phoneNumber} onChangeText={setPhoneNumber} keyboardType="phone-pad"/>
+                    <TextInput style={styles.input} placeholder="E-mail" placeholderTextColor="#B8C1D1" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address"/>
 
-                <TextInput style={styles.input} placeholder="Contato de emergência" placeholderTextColor="#B8C1D1" value={emergencyContact} onChangeText={setEmergencyContact} keyboardType="phone-pad"/>
+                    <TextInput style={styles.input} placeholder="Senha" placeholderTextColor="#B8C1D1" value={password} onChangeText={setPassword} secureTextEntry/>
 
-                <TouchableOpacity style={styles.buttonCadastro} onPress={handleCadastro}>
-                    {isLoading ? (<ActivityIndicator color="#FFFFFF"/>) : (<Text style={styles.buttonCadastroText}>Cadastrar</Text>)}
-                </TouchableOpacity>
+                    <TextInput style={styles.input} placeholder="Data de nascimento (YYYY-MM-DD)" placeholderTextColor="#B8C1D1" value={birthDate} onChangeText={setBirthDate}/>
 
-                <TouchableOpacity style={styles.buttonLogin} onPress={() => navigation.navigate("Login")}>
-                    <Text style={styles.buttonLoginText}>Já tenho uma conta</Text>
-                </TouchableOpacity>
+                    <Text style={styles.tituloGenero}>Gênero</Text>
 
-            </View>
+                    <View style={styles.generoContainer}>
+                        {genderOptions.map((option) => (
+                            <TouchableOpacity key={option} style={[styles.generoButton,gender === option && styles.generoButtonSelected,]} onPress={() => setGender(option)}>
+                            <Text style={[styles.generoButtonText,gender === option && styles.generoButtonTextSelected,]}>
+                                {option}
+                            </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
 
-        </ScrollView>
+                    <TextInput style={[styles.input, styles.textArea]} placeholder="Descrição do usuário" placeholderTextColor="#B8C1D1" value={userDescription} onChangeText={setUserDescription} multiline/>
 
-    </View>
+                    <TextInput style={styles.input} placeholder="Localização atual" placeholderTextColor="#B8C1D1" value={currentLocation} onChangeText={setCurrentLocation}/>
 
-    </ImageBackground>
+                    <TextInput style={styles.input} placeholder="Telefone" placeholderTextColor="#B8C1D1" value={phoneNumber} onChangeText={setPhoneNumber} keyboardType="phone-pad"/>
+
+                    <TextInput style={styles.input} placeholder="Contato de emergência" placeholderTextColor="#B8C1D1" value={emergencyContact} onChangeText={setEmergencyContact} keyboardType="phone-pad"/>
+
+                    <TouchableOpacity style={styles.buttonCadastro} onPress={handleCadastro}>
+                        {isLoading ? (<ActivityIndicator color="#FFFFFF"/>) : (<Text style={styles.buttonCadastroText}>Cadastrar</Text>)}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.buttonLogin} onPress={() => navigation.navigate("Login")}>
+                        <Text style={styles.buttonLoginText}>Já tenho uma conta</Text>
+                    </TouchableOpacity>
+
+                </View>
+
+            </ScrollView>
+
+        </View>
+
+        </ImageBackground>
     );
 }
 

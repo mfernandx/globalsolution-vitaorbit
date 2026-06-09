@@ -2,8 +2,8 @@ import { useState } from 'react';
 import {Alert,ScrollView,StyleSheet,Text,TextInput,TouchableOpacity,View} from 'react-native';
 import {FontAwesome5,Ionicons} from '@expo/vector-icons';
 import { VitalInput } from '../components/VitalInput';
-import { createHealthRecord } from '../services/healthRecordService';
 import { useAuth } from '../context/AuthContext';
+import { salvarMonitoramentoSinaisControl } from '../controller/healthRecordControl';
 
 
 export function MonitoramentoSinaisScreen({navigation,}: any) {
@@ -19,52 +19,45 @@ export function MonitoramentoSinaisScreen({navigation,}: any) {
     const currentDate = new Date().toLocaleDateString('pt-BR', {day: '2-digit',month: 'long',year: 'numeric',});
     const { loggedUser } = useAuth();
 
+    function limparFormulario() {
+        setHeartRate("");
+        setBloodPressure("");
+        setBodyTemperature("");
+        setOxygenSaturation("");
+        setMood("");
+        setHydrationLevel("");
+        setSleepHours("");
+        setNotes("");
+    }
+
     async function handleSalvaMonitoramento() {
-        if (!loggedUser?.userId) {
-            Alert.alert('Erro', 'Nenhum usuário logado encontrado.');
-            return;
-        }
-
-        if (!heartRate || !bloodPressure || !bodyTemperature || !oxygenSaturation || !mood || !hydrationLevel || !sleepHours) {
-            Alert.alert('Atenção', 'Preencha todos os sinais vitais.');
-            return;
-        }
-
         try {
-            const healthRecord = {
-                userId: loggedUser.userId,
-                heartRate: Number(heartRate),
+            const createdRecord = await salvarMonitoramentoSinaisControl({
+                userId: loggedUser?.userId ?? 0,
+                heartRate,
                 bloodPressure,
-                bodyTemperature: Number(bodyTemperature.replace(',', '.')),
-                oxygenSaturation: Number(oxygenSaturation),
-                mood: mood,
-                hydrationLevel: Number(hydrationLevel.replace(',', '.')),
-                sleepHours: Number(sleepHours.replace(',', '.')),
+                bodyTemperature,
+                oxygenSaturation,
+                mood,
+                hydrationLevel,
+                sleepHours,
                 notes,
-            };
-
-            const createdRecord = await createHealthRecord(healthRecord);
+            });
 
             Alert.alert(
-                'Registro salvo',
+                "Registro salvo",
                 `Registro criado com risco: ${createdRecord.riskClassification}`
             );
 
-            setHeartRate('');
-            setBloodPressure('');
-            setBodyTemperature('');
-            setOxygenSaturation('');
-            setMood('');
-            setHydrationLevel('');
-            setSleepHours('');
-            setNotes('');
+            limparFormulario();
 
         } catch (error: any) {
             const apiMessage = error.response?.data;
 
-            Alert.alert('Erro ao salvar',typeof apiMessage === 'string' ? apiMessage : 'Não foi possível salvar o registro.');
+            Alert.alert("Erro ao salvar",typeof apiMessage === "string" ? apiMessage : error.message || "Não foi possível salvar o registro.");
         }
-}
+    }
+
 
     return (
 

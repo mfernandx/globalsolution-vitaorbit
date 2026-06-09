@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Alert, ScrollView, ActivityIndicator} from "react-native";
 import { useAuth } from "../context/AuthContext";
-import { getSymptomRecordsByUserId } from "../services/symptomRecordService";
-import { getHealthRecordsByUserId } from "../services/healthRecordService";
 import { Ionicons } from "@expo/vector-icons";
 import { RegisterCard } from "../components/RegisterCard";
 import { RegisterItem } from "../model/RegisterItem";
+import { carregarHistoricoControl } from "../controller/recordsControl";
 
 
 export function RegistrosScreen() {
@@ -15,51 +14,14 @@ export function RegistrosScreen() {
     const [isLoading, setIsLoading] = useState(true);
 
     async function carregaHistorico() {
-        
+
         try {
-            if (!loggedUser?.userId) {
-                Alert.alert("Erro", "Usuário logado não encontrado.");
-                return;
-            }
+            const items = await carregarHistoricoControl(loggedUser?.userId ?? 0);
 
-            const healthRecords = await getHealthRecordsByUserId(loggedUser.userId);
-            const symptomRecords = await getSymptomRecordsByUserId(loggedUser.userId);
+            setRegisterItems(items);
 
-            const healthItems: RegisterItem[] = healthRecords.map((record: any) => ({
-                id: `health-${record.healthRecordId}`,
-                type: "health",
-                title: "Registro de sinais vitais",
-                subtitle: `Risco: ${record.riskClassification}`,
-                date: record.registeredAt,
-                details: [
-                    `Batimentos: ${record.heartRate} bpm`,
-                    `Pressão: ${record.bloodPressure} mmHg`,
-                    `Temperatura: ${record.bodyTemperature} °C`,
-                    `Oxigenação: ${record.oxygenSaturation}%`,
-                    `Hidratação: ${record.hydrationLevel} L`,
-                    `Sono: ${record.sleepHours} horas`,
-                ],
-            }));
-
-            const symptomItems: RegisterItem[] = symptomRecords.map((record: any) => ({
-                id: `symptom-${record.symptomRecordId}`,
-                type: "symptom",
-                title: "Registro de sintoma",
-                subtitle: record.symptomName,
-                date: record.registeredAt,
-                details: [
-                    `Intensidade: ${record.intensity}/10`,
-                    `Frequência: ${record.frequency}`,
-                    `Descrição: ${record.description}`,
-                ],
-            }));
-
-            const allItems = [...healthItems, ...symptomItems];
-
-            setRegisterItems(allItems);
-
-        } catch (error) {
-            Alert.alert("Erro", "Não foi possível carregar o histórico.");
+        } catch (error: any) {
+            Alert.alert("Erro",error.message || "Não foi possível carregar o histórico.");
 
         } finally {
             setIsLoading(false);

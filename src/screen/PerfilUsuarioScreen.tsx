@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
 import { User } from "../model/User";
-import { getUserById } from "../services/userService";
 import { useAuth } from "../context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import { UserInfoCard } from '../components/UserInfoCard';
+import { carregarPerfilUsuarioControl } from "../controller/profileUserControl";
 
 export function PerfilUsuarioScreen() {
 
@@ -14,17 +14,14 @@ export function PerfilUsuarioScreen() {
     const [offlineMode, setOfflineMode] = useState(true);
   
     async function carregaPerfilUsuario() {
-        try {
-            if (!loggedUser?.userId) {
-                Alert.alert('Erro', 'Nenhum usuário logado encontrado.');
-                return;
-            }
 
-            const userData = await getUserById(loggedUser.userId);
+        try {
+            const userData = await carregarPerfilUsuarioControl(loggedUser?.userId ?? 0);
+
             setUser(userData);
 
-        } catch {
-            Alert.alert('Erro', 'Não foi possível carregar o perfil.');
+        } catch (error: any) {
+            Alert.alert("Erro",error.message || "Não foi possível carregar o perfil.");
 
         } finally {
             setIsLoading(false);
