@@ -387,10 +387,10 @@ https://youtu.be/msNRxSe23D4?si=v01u6_DxtJuICREN
 
 # 👨‍💻 Desenvolvido por:
 
-* Maria Fernanda Santos Mendes - 2TDSPI
-* Beatriz de Sousa Franco – 2TDSPI
-* Natan Freitas de Moraes - 2TDSPI
-* Giovana Souza Vieira - 2TDSPI 
+* Maria Fernanda Santos Mendes - 565277 - 2TDSPI
+* Beatriz de Sousa Franco – 563686 - 2TDSPI
+* Natan Freitas de Moraes - 564992 - 2TDSPI
+* Giovana Souza Vieira - 564430 - 2TDSPI 
 
 ---
 
