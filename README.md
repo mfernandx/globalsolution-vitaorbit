@@ -1,12 +1,9 @@
 # 🚀 VitaOrbit
 
-<div align="center">
-
 Sistema de monitoramento pessoal de saúde inspirado em tecnologias utilizadas em missões espaciais.
 
 Desenvolvido para auxiliar o acompanhamento de sinais vitais, sintomas e situações de emergência em ambientes extremos ou com acesso limitado a serviços médicos.
 
-</div>
 
 ---
 
@@ -274,7 +271,7 @@ git clone https://github.com/AntonioCarvalhoFIAP/global-solution-1-mfernandx.git
 ## Entrar na pasta
 
 ```bash
-cd VitaOrbit
+cd vitaorbit-app
 ```
 
 ---
@@ -377,6 +374,14 @@ i
 ## Emergência
 
 - Solicitação de ajuda
+
+---
+
+# 🎥 Link do vídeo de demonstração:
+
+```text
+https://youtu.be/msNRxSe23D4?si=v01u6_DxtJuICREN
+```
 
 ---
 
